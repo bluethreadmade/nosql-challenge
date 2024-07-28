@@ -1,1 +1,1 @@
-# nosql-challenge
+# NoSQL Challenge: Social Network API
