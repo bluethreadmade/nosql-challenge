@@ -17,11 +17,15 @@ const thoughtSchema = new Schema({
     type: String,
     required: true,
   },
-  reactins: {
+  reactions: {
     // array of nested docs created with the reactionSchema
   },
-  // Create a virtual called reactionCount that retrieves the length of the thought's reactions array field on query.
+
 });
+// Create a virtual called reactionCount that retrieves the length of the thought's reactions array field on query.
+thoughtSchema.virtual('reactionCount').get(function() {
+    return this.reactions.length();
+})
 
 // Reaction (SCHEMA ONLY)
 
