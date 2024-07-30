@@ -34,4 +34,29 @@ module.exports = {
       return res.status(500).json(err);
     }
   },
+
+  async createThought(req, res) {
+    try {
+      const thought = await Thought.create(req.body);
+      res.json(thought);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
+
+  async updateThought(req, res) {
+    try {
+      const thought = await Thought.findOneAndUpdate(
+        { _id: req.oarans.thoughtId },
+        { $set: req.body }
+      );
+
+      if (!thought) {
+        res.status(404).json({ message: "No thought with that ID" });
+      }
+      res.json(thought);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
 };
