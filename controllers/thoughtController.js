@@ -1,16 +1,37 @@
+const { ObjectId } = require("mongoose").Types;
 // require the thought model
 const { Thought } = require("../../models");
 
-// /api/thoughts
-// GET to get all thoughts
-router.get("/", async (req, res) => {
-  try {
-    const thoughtData = await Thought.find({});
-    res.json(thoughtData);
-  } catch {
-    console.log(err);
-    res.status(500).json(err);
-  }
-});
+module.exports = {
+  // get all thoughts
+  async getThoughts(req, res) {
+    try {
+      const thoughtData = await Thought.find({});
 
+      res.json(thoughtData);
+    } catch {
+      console.log(err);
+      res.status(500).json(err);
+    }
+  },
 
+  async getSingleThought(req, res) {
+    try {
+      const thought = await Thought.findOne({
+        _id: req.params.thoughtId,
+      }).select("-__v");
+
+      if (!thought) {
+        return res.status(404).json({ message: "No thought with that ID" });
+      }
+
+      res.json({
+        user,
+        thought: await thought(req.params.thoughtId),
+      });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json(err);
+    }
+  },
+};
