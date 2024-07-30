@@ -1,5 +1,5 @@
 const { ObjectId } = require("bson");
-const { Schema } = require("mongoose");
+const { Schema, model, Types } = require("mongoose");
 
 // Schema to create Thought model
 const thoughtSchema = new Schema({
@@ -18,7 +18,7 @@ const thoughtSchema = new Schema({
     // get: timeFormat
   },
   // user that created this thought
-  userName: {
+  username: {
     type: String,
     required: true,
   },
@@ -29,14 +29,14 @@ const thoughtSchema = new Schema({
         // Use Mongoose's ObjectId data type
         type: Schema.Types.ObjectId,
         // Default value is set to a new ObjectId
-        default: new ObjectId
+        default: () => new Types.ObjectId(),
       },
       reactionBody: {
         type: String,
         required: true,
         maxLength: 280,
       },
-      userName: {
+      username: {
         type: String,
         required: true,
       },
@@ -59,3 +59,6 @@ thoughtSchema.virtual("reactionCount").get(function () {
 // function timeFormat(createdAt) {
 
 // }
+
+const Thought = model("thought", thoughtSchema);
+module.exports = Thought;

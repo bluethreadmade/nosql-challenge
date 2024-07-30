@@ -2,8 +2,8 @@
 const router = require('express').Router();
 
 // point userRoutes const to the userRoutes file
-const userRoutes = require('./users');
-const thoughtRoutes = require('./thoughts');
+const userRoutes = require('./userRoutes');
+const thoughtRoutes = require('./thoughtRoutes');
 
 
 router.use('/users', userRoutes);
