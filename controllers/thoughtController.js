@@ -1,6 +1,7 @@
 const { ObjectId } = require("mongoose").Types;
+const mongoose = require("mongoose");
 // require the thought model
-const { Thought } = require("../models");
+const { Thought, User } = require("../models");
 
 module.exports = {
   // get all thoughts
@@ -25,10 +26,7 @@ module.exports = {
         return res.status(404).json({ message: "No thought with that ID" });
       }
 
-      res.json({
-        user,
-        thought: await thought(req.params.thoughtId),
-      });
+      res.json(thought);
     } catch (err) {
       console.log(err);
       return res.status(500).json(err);
@@ -37,9 +35,29 @@ module.exports = {
 
   async createThought(req, res) {
     try {
-      const thought = await Thought.create(req.body);
-      res.json(thought);
+      // creating the new thought
+      const newThought = await Thought.create({
+        thoughtText: req.body.thoughtText,
+        username: req.body.username,
+        userId: req.body.userId,
+      });
+
+      // adding it to the user
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: req.body.userId },
+        { $push: { thoughts: newThought._id } },
+        { new: true } // return the updated user doc
+      );
+
+      if (!updatedUser) {
+        console.log(newThought);
+        return res
+          .status(404)
+          .json({ message: "Sorry No user found with that Id" });
+      }
+      res.json(updatedUser);
     } catch (err) {
+      console.log(err);
       res.status(500).json(err);
     }
   },

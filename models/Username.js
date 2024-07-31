@@ -6,7 +6,7 @@ var validateEmail = function(email) {
 };
 
 // Schema to create User model
-const usernameSchema = new Schema({
+const userSchema = new Schema({
   username: {
     type: String,
     unique: true,
@@ -29,9 +29,9 @@ const usernameSchema = new Schema({
 });
 
 // Virtual called friendCount that retrieves the length of the user's friends array field on query.
-usernameSchema.virtual('friendCount').get(function() {
+userSchema.virtual('friendCount').get(function() {
     return this.friends.length();
 });
 
-const User = model("user", usernameSchema);
+const User = model("user", userSchema);
 module.exports = User;
