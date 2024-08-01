@@ -7,7 +7,7 @@ module.exports = {
   // get all thoughts
   async getThoughts(req, res) {
     try {
-      const thoughtData = await Thought.find();
+      const thoughtData = await Thought.find().populate("reactions");
 
       res.json(thoughtData);
     } catch {
@@ -88,6 +88,90 @@ module.exports = {
       res.json(thought);
     } catch (err) {
       res.status(500).json(err);
+    }
+  },
+
+  async createReaction(req, res) {
+    const { thoughtId } = req.params;
+    const { reactionBody, username } = req.body;
+
+    console.log(req.params, req.body);
+
+    try {
+      const thought = await Thought.findById(thoughtId);
+      if (!thought) {
+        return res.status(404).json({ message: "No thought with that ID" });
+      }
+
+      thought.reactions.push({ reactionBody, username });
+
+      await thought.save();
+
+      return res.status(200).json({ message: "reaction created", thought });
+    } catch (err) {
+      console.error(err);
+      return res.statsus(500).json({ message: "server error" });
+    }
+  },
+
+  async getReaction(req, res) {
+    const { thoughtId, reactionId } = req.params;
+
+    try {
+      const thought = await Thought.findOne({
+        _id: thoughtId,
+      });
+
+      if (!thought) {
+        return res.status(404).json({ message: "No thought with that ID" });
+      }
+
+      const reaction = thought.reactions.find(
+        (reaction) => reaction._id.toString() === reactionId
+      );
+
+      if (!reaction) {
+        return res
+          .status(404)
+          .json({ message: "no reaction found in this thought with this id" });
+      }
+
+      res.json(reaction);
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json(err);
+    }
+  },
+
+  async deleteReaction(req, res) {
+    const { thoughtId, reactionId } = req.params;
+
+    try {
+      const thought = await Thought.findOne({
+        _id: thoughtId,
+      });
+
+      if (!thought) {
+        return res.status(404).json({ message: "No thought with that ID" });
+      }
+
+      const reactionIndex = thought.reactions.findIndex(
+        (reaction) => reaction._id.toString() === reactionId
+      );
+
+      if (reactionIndex === -1) {
+        return res
+          .status(404)
+          .json({ message: "No reaction found in this thought with this ID" });
+      }
+
+      thought.reactions.splice(reactionIndex, 1);
+      await thought.save();
+
+      res.json({ message: "Reaction deleted successfully" });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json(err);
     }
   },
 };

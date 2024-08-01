@@ -24,7 +24,8 @@ module.exports = {
         _id: req.params.userId,
       })
         .populate("thoughts")
-        .populate("friends");
+        .populate("friends")
+
 
       if (!user) {
         return res.status(404).json({ message: "No user with that ID" });
@@ -79,4 +80,20 @@ module.exports = {
       res.status(500).json(err);
     }
   },
+
+  // create a friend
+  async createFriend(req, res) {
+    try {
+      // creating the friend
+      const friend = await User.create({
+        userID: req.body.userId,
+        username: req.body.username,
+      });
+      res.json(friend);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
+
+  // delete a friend
 };
