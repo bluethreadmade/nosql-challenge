@@ -8,10 +8,21 @@ module.exports = {
     try {
       const userData = await User.find()
         .populate("thoughts")
-        .populate("friends");
+        .populate({
+          path: "friends",
+          select: "-__v"
+        })
+        .select("-__v -password") // Exclude __v and password fields
+        .exec();
 
-      res.json(userData);
-    } catch {
+        const usersWithFriendCount = userData.map(user => {
+          const userObj = user.toObject(); // Convert Mongoose document to plain JavaScript object
+          userObj.friendCount = user.friendCount; // Add the friendCount to the user object
+          return userObj;
+        });
+
+      res.json(usersWithFriendCount);
+    } catch (err) {
       console.log(err);
       res.status(500).json(err);
     }

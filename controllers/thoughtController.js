@@ -7,10 +7,23 @@ module.exports = {
   // get all thoughts
   async getThoughts(req, res) {
     try {
-      const thoughtData = await Thought.find().populate("reactions");
+      const thoughtData = await Thought.find()
+        .populate("reactions")
+        .populate({
+          path: "reactions",
+          select: "-__v",
+        })
+        .select("-__v -password") // Exclude __v and password fields
+        .exec();
 
-      res.json(thoughtData);
-    } catch {
+      const thoughtsWithReactionCount = thoughtData.map((thought) => {
+        const thoughtObj = thought.toObject(); // Convert Mongoose document to plain JavaScript object
+        thoughtObj.reactionCount = thought.reactionCount; // Add the reactionCount to the thought object
+        return thoughtObj;
+      });
+
+      res.json(thoughtsWithReactionCount);
+    } catch (err) {
       console.log(err);
       res.status(500).json(err);
     }
@@ -99,7 +112,7 @@ module.exports = {
       const thought = await Thought.findById(thoughtId);
       if (!thought) {
         return res.status(404).json({ message: "No thought with that ID" });
-      };
+      }
 
       thought.reactions.push({ reactionBody, username });
 
