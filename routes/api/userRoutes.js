@@ -37,7 +37,7 @@ router.route('/:userId').get(getSingleUser).delete(deleteUser);
 // BONUS: Remove a user's associated thoughts when deleted.
 
 // /api/users/:userId/friends/:friendId
-router.route('/api/users/userId/friends/:friendId')
+router.route('/:userId/friends/:friendId')
     // POST to add a new friend to a user's friend list
     .post(createFriend)
     // DELETE to remove a friend from a user's friend list

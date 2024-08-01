@@ -95,13 +95,11 @@ module.exports = {
     const { thoughtId } = req.params;
     const { reactionBody, username } = req.body;
 
-    console.log(req.params, req.body);
-
     try {
       const thought = await Thought.findById(thoughtId);
       if (!thought) {
         return res.status(404).json({ message: "No thought with that ID" });
-      }
+      };
 
       thought.reactions.push({ reactionBody, username });
 

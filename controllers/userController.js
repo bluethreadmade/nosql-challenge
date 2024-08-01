@@ -83,13 +83,21 @@ module.exports = {
 
   // create a friend
   async createFriend(req, res) {
+    const { userId, friendId} = req.params;
+
     try {
       // creating the friend
-      const friend = await User.create({
-        userID: req.body.userId,
-        username: req.body.username,
-      });
-      res.json(friend);
+      const user = await User.findById(userId);
+
+      if (!user) {
+        return res.status(404).json({ message: "no user with that id"});
+      }
+
+      user.friends.push(friendId);
+
+      await user.save();
+
+      return res.status(200).json({ message: "friend created", user });
     } catch (err) {
       res.status(500).json(err);
     }
