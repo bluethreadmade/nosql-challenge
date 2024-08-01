@@ -24,8 +24,7 @@ module.exports = {
         _id: req.params.userId,
       })
         .populate("thoughts")
-        .populate("friends")
-
+        .populate("friends");
 
       if (!user) {
         return res.status(404).json({ message: "No user with that ID" });
@@ -83,14 +82,14 @@ module.exports = {
 
   // create a friend
   async createFriend(req, res) {
-    const { userId, friendId} = req.params;
+    const { userId, friendId } = req.params;
 
     try {
       // creating the friend
       const user = await User.findById(userId);
 
       if (!user) {
-        return res.status(404).json({ message: "no user with that id"});
+        return res.status(404).json({ message: "no user with that id" });
       }
 
       user.friends.push(friendId);
@@ -104,4 +103,35 @@ module.exports = {
   },
 
   // delete a friend
+  async deleteFriend(req, res) {
+    const { userId, friendId } = req.params;
+
+    try {
+      const user = await User.findOne({
+        _id: userId,
+      });
+
+      if (!user) {
+        return res.status(404).json({ message: "no user with that id" });
+      }
+
+      const friendIndex = user.friends.findIndex(
+        (friend) => friend._id.toString() === friendId
+      );
+
+      if (friendIndex === -1) {
+        return res
+          .status(404)
+          .json({ message: "no friend with that id for this user" });
+      }
+
+      user.friends.splice(friendIndex, 1);
+      await user.save();
+
+      res.json({ message: "friend deleted" });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json(err);
+    }
+  },
 };

@@ -41,6 +41,6 @@ router.route('/:userId/friends/:friendId')
     // POST to add a new friend to a user's friend list
     .post(createFriend)
     // DELETE to remove a friend from a user's friend list
-  //  .delete(deleteFriend)
+    .delete(deleteFriend)
 
 module.exports = router;
